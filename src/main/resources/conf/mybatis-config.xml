@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <!-- 定义的是类型别名,可以通过使用类名称的简短写法来表示类的完整路径.-->
+    <typeAliases>
+        <!-- 在org.mybatis.wechat.entity包下的类都可以使用类名称来表示类的完整路径.-->
+        <package name="org.mybatis.wechat.entity"/>
+    </typeAliases>
+
+    <!-- 定义interceptor的拦截器插件 -->
+    <plugins>
+        <plugin interceptor="org.mybatis.wechat.interceptor.PageInteceptor"/>
+    </plugins>
+    
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <!-- 用于配置JDBC连接数据库时候的内容. -->
+                <property name="driver" value="com.mysql.jdbc.Driver"/>
+                <!-- 在连接mysql数据库的时候,需要设置字符编码,mysql默认的是GBK而传递的是UTIF-8-->
+                <property name="url" value="jdbc:mysql://localhost:3306/mybatis?useUnicode=true&amp;characterEncoding=UTF-8"/>
+                <property name="username" value="dong"/>
+                <property name="password" value="java"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <mappers>
+        <!--加载单个实体entity的映射文件-->
+        <mapper resource="conf/Message.xml"/>
+        <!-- 引入新加入的实体entity的mapper映射文件-->
+        <mapper resource="conf/Command.xml"/>
+        <mapper resource="conf/CommandContent.xml"/>
+    </mappers>
+</configuration>

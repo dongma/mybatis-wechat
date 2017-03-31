@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- mapper标签中的namespace属性是用来区分不同的命名域,
+        在不同的namespace中对于sql语句id命名就没有那么严格,可以有相同的id标识
+<mapper namespace="Message"> -->
+<mapper namespace="org.mybatis.wechat.service.IMessage">
+    <!-- resultMap可以用来解决的是：在Java实体字段的名称与数据表字段名称不一致问题。
+        id: 用来区分不同的resultMap查询结果集.
+        type: 表示的是查询得到的对象的类型.
+    -->
+    <resultMap id="messageResult" type="org.mybatis.wechat.entity.Message">
+        <!-- 在mybatis中,id标签指的是数据表中的主键列.-->
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <!-- 对于其他非主键列使用result标签进行标识-->
+        <result column="command" jdbcType="VARCHAR" property="command"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="content" jdbcType="VARCHAR" property="content"/>
+    </resultMap>
+
+    <!--<select>标签中的id属性在xml配置文件中是唯一的,其用来唯一标识一条sql语句.
+        parameterType: 表示对于动态的sql语句的传值问题.
+        resultType: 表示的是查询得到的结果对象的类型.
+        resultMap: 表示的是查询得到对象的Map集合. -->
+    <!--使用OGNL表达式进行动态sql语句的拼接
+           对于parameterType的类型为自定义类型的时候,可以直接使用对象的属性.-->
+    <select id="queryMessageList" parameterType="org.mybatis.wechat.entity.Message" resultMap="messageResult">
+        select id, command, description, content from message where 1 = 1
+        <if test="command != null and !&quot;&quot;.equals(command.trim())">
+            and command=#{command}
+        </if>
+        <if test="description != null and !&quot;&quot;.equals(description.trim())">
+            and description like '%' #{description} '%'
+        </if>
+    </select>
+
+    <!-- mybatis中<select>标签需要处理的参数信息.-->
+    <select id="queryMessageByPage" parameterType="java.util.Map" resultMap="messageResult">
+      select <include refid="columns"/> from message
+      <where>
+        <if test="message.command != null and !&quot;&quot;.equals(message.command.trim())">
+            and command = #{message.command}
+        </if>
+        <if test="message.description != null and !&quot;&quot;.equals(message.description.trim())">
+            and description like '%' #{message.description} '%'
+        </if>
+      </where>
+      <!-- order by id limit #{page.dbIndex}, #{page.dbNumber} -->
+    </select>
+
+    <!--单条删除的sql语句,通过传递进来的id主键编号删除记录
+        在OGNL表达式中对于单个的String和其他基本类型,应该使用_parameter来引用传递的参数. -->
+    <delete id="deleteOne" parameterType="int">
+      delete from message where id = #{_parameter}
+    </delete>
+
+    <!--批量删除的sql语句-->
+    <delete id="deleteBatch" parameterType="java.util.List">
+      delete from message where id in (
+      <!-- 在动态的拼接sql语句的时候,可以使用for each循环进行拼接. collection表示的是要便利的集合
+           item 表示的是引用每个单独的对象, separator表示的是mybatis可以自动对sql语句按照执行的分隔符进行拼接.
+           对于item为自定义类型的时候,引用其属性应该使用 item.属性名;
+       -->
+      <foreach collection="list" item="item" separator=",">
+           #{item}
+      </foreach>
+      )
+    </delete>
+
+    <!-- 对于列名columns进行重命名-->
+    <sql id="columns">ID, COMMAND, DESCRIPTION, CONTENT</sql>
+
+    <!-- 该sql语句用来查询在Message数据表中总共存在多少条记录信息-->
+    <select id="countRecord" parameterType="org.mybatis.wechat.entity.Message" resultType="java.lang.Integer">
+      select count(*) from message
+      <where>
+          <if test="command != null and !&quot;&quot;.equals(command.trim())">
+            command = #{command}
+          </if>
+          <if test="description != null and !&quot;&quot;.equals(command.trim())">
+            description like '%' #{description} '%'
+          </if>
+      </where>
+    </select>
+</mapper>
