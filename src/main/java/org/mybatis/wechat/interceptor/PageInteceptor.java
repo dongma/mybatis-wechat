@@ -17,8 +17,8 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- *
- * @author: dongDescription: Mybatis所有分页查询的拦截器
+ * Description: Mybatis所有分页查询的拦截器
+ * @author: dong
  *
  * @create: 2017-01-14-18:08
  */
@@ -40,6 +40,12 @@ public class PageInteceptor implements Interceptor {
      * 也就是调用下一个拦截器拦截目标方法;
      * */
     public Object intercept(Invocation invocation) throws Throwable {
+        /**
+         *  Invocation类的属性有: Object target //被代理的对象
+         *                       Method method // 被调用的方法
+         *                       Object[] args // 调用的参数.
+         * */
+        // 从invocation中获取拦截的StatementHandler对象.
         StatementHandler handler = (StatementHandler)invocation.getTarget();
         // DefaultReflectorFactory应该是之前在SystemMetaObject定义的常量 SystemMetaObject.DEFAULT_REFLECTOR_FACTORY
         MetaObject metaObject = MetaObject.forObject(handler, SystemMetaObject.DEFAULT_OBJECT_FACTORY,
@@ -56,6 +62,7 @@ public class PageInteceptor implements Interceptor {
             String countSql = "select count(*) from (" + sql  +") a";
             // 获取数据连接对象Connection
             Connection conn = (Connection)invocation.getArgs()[0];
+            // 对计数的sql进行预处理.
             PreparedStatement countStatment = conn.prepareStatement(countSql);
             // 通过MetaObject.getValue方法获取预处理的参数.
             ParameterHandler paramHandler = (ParameterHandler)metaObject.getValue("delegate.parameterHandler");
