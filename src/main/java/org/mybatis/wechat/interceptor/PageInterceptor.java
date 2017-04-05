@@ -33,7 +33,7 @@ import java.util.Properties;
             args = {Connection.class}
         )
 })
-public class PageInteceptor implements Interceptor {
+public class PageInterceptor implements Interceptor {
 
     /**
      * intercept方法是实现拦截逻辑的地方,内部要通过invocation.process()显示的推进责任链前进,

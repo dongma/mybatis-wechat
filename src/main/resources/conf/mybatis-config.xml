@@ -11,7 +11,7 @@
 
     <!-- 定义interceptor的拦截器插件 -->
     <plugins>
-        <plugin interceptor="org.mybatis.wechat.interceptor.PageInteceptor"/>
+        <plugin interceptor="org.mybatis.wechat.interceptor.PageInterceptor"/>
     </plugins>
     
     <environments default="development">

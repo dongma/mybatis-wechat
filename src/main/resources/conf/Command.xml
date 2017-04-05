@@ -13,7 +13,7 @@
         <!-- 对于其他的字段,我们应该使用result标签.-->
         <result column="name" jdbcType="VARCHAR" property="name"></result>
         <result column="description" jdbcType="VARCHAR" property="description"></result>
-        <!--使用collection标签用来处理一对多映射中的 一端-->
+        <!--使用collection标签用来处理一对多映射中的一端-->
         <collection property="contentList" resultMap="CommandContent.content"></collection>
     </resultMap>
     
